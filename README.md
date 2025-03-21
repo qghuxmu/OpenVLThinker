@@ -12,7 +12,7 @@ Our study investigates whether R1-like reasoning capabilities can be successfull
 
 As an early result, we present OpenVLThinker, a LVLM exhibiting consistently improved reasoning performance on challenging benchmarks such as MathVista, MathVerse, and MathVision.
 
-📄 **Paper**: A preview of the paper is provided [here]("./paper/OpenVLThinker_report.pdf") 
+📄 **Paper**: A preview of the paper is provided [here](./paper/OpenVLThinker_report.pdf) 
 
 <p align="center">
 <img src="./assets/demo-vlthinker.png" width="600">
