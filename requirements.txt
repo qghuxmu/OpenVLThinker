@@ -1,0 +1,14 @@
+datasets==3.3.2
+requests==2.32.3
+huggingface-hub==0.29.1 
+openai==1.64.0 
+transformers==4.49.0.dev0
+torch==2.5.1
+tqdm==4.67.1
+accelerate==1.4.0
+flash-attn==2.3.0
+protobuf==5.29.3
+sentencepiece>=0.2.0 
+vllm==0.6.4 
+numpy==1.25.2
+mathruler==0.1.0

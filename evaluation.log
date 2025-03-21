@@ -1,0 +1,28 @@
+2025-03-20 16:31:58,859 - INFO - Using device: cuda:3
+2025-03-20 16:31:58,859 - INFO - Loading model ydeng9/OpenVLThinker-7B
+2025-03-20 16:37:03,902 - INFO - Loading dataset AI4Math/MathVista
+2025-03-20 16:40:14,639 - INFO - Saved 10 descriptions to ./evaluation/outputs/mathvista_OpenVLThinker-7B.json
+2025-03-20 16:42:16,517 - INFO - Saved 20 descriptions to ./evaluation/outputs/mathvista_OpenVLThinker-7B.json
+2025-03-20 16:43:58,745 - INFO - Using device: cuda:3
+2025-03-20 16:43:58,745 - INFO - Loading model ydeng9/OpenVLThinker-7B
+2025-03-20 16:44:03,879 - INFO - Loading dataset AI4Math/MathVista
+2025-03-20 16:47:11,962 - INFO - Saved 10 descriptions to ./evaluation/outputs/mathvista_OpenVLThinker-7B.json
+2025-03-20 16:49:12,754 - INFO - Saved 20 descriptions to ./evaluation/outputs/mathvista_OpenVLThinker-7B.json
+2025-03-20 16:53:00,536 - INFO - Saved 30 descriptions to ./evaluation/outputs/mathvista_OpenVLThinker-7B.json
+2025-03-20 16:55:19,177 - INFO - Saved 40 descriptions to ./evaluation/outputs/mathvista_OpenVLThinker-7B.json
+2025-03-20 17:03:37,841 - INFO - Saved 50 descriptions to ./evaluation/outputs/mathvista_OpenVLThinker-7B.json
+2025-03-20 17:05:46,166 - INFO - Saved 60 descriptions to ./evaluation/outputs/mathvista_OpenVLThinker-7B.json
+2025-03-20 17:10:37,579 - INFO - Saved 70 descriptions to ./evaluation/outputs/mathvista_OpenVLThinker-7B.json
+2025-03-20 17:16:44,719 - INFO - Using device: cuda:3
+2025-03-20 17:16:44,721 - INFO - Loading model ydeng9/qwen2_5_grpo_7b_subsetv2_iter2_step60
+2025-03-20 17:23:41,380 - INFO - Loading dataset AI4Math/MathVista
+2025-03-20 17:26:55,362 - INFO - Saved 10 descriptions to ./evaluation/outputs/mathvista_qwen2_5_grpo_7b_subsetv2_iter2_step60.json
+2025-03-20 17:28:56,899 - INFO - Saved 20 descriptions to ./evaluation/outputs/mathvista_qwen2_5_grpo_7b_subsetv2_iter2_step60.json
+2025-03-20 17:32:52,813 - INFO - Saved 30 descriptions to ./evaluation/outputs/mathvista_qwen2_5_grpo_7b_subsetv2_iter2_step60.json
+2025-03-20 17:35:12,991 - INFO - Saved 40 descriptions to ./evaluation/outputs/mathvista_qwen2_5_grpo_7b_subsetv2_iter2_step60.json
+2025-03-20 17:35:34,012 - INFO - Using device: cuda:3
+2025-03-20 17:35:34,012 - INFO - Loading model ydeng9/OpenVLThinker-7B
+2025-03-20 17:35:41,595 - INFO - Loading dataset AI4Math/MathVista
+2025-03-20 17:39:04,577 - INFO - Saved 10 descriptions to ./evaluation/outputs/mathvista_OpenVLThinker-7B.json
+2025-03-20 17:41:12,271 - INFO - Saved 20 descriptions to ./evaluation/outputs/mathvista_OpenVLThinker-7B.json
+2025-03-20 17:44:57,471 - INFO - Saved 30 descriptions to ./evaluation/outputs/mathvista_OpenVLThinker-7B.json
