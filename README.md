@@ -3,7 +3,7 @@
 <h1>OpenVLThinker: An Early Exploration to Vision-Language Reasoning via Iterative Self-Improvement</h1>
 
 <p align="center">
-  <a href="https://huggingface.co/ydeng9/OpenVLThinker-7B">🤗Model</a> • <a href="https://yihe-deng.notion.site/openvlthinker">📝Blog</a>
+  <a href="https://huggingface.co/ydeng9/OpenVLThinker-7B">🤗Model</a> • <a href="https://yihe-deng.notion.site/openvlthinker">📝Blog</a> • <a href="https://arxiv.org/abs/2503.17352">📄Paper</a>
 </p>
 
 </div>
@@ -13,8 +13,6 @@ Authors: [Yihe Deng](https://yihe-deng.notion.site/yihe-deng-main), [Hritik Bans
 Our study investigates whether R1-like reasoning capabilities can be successfully integrated into large vision-language models (LVLMs) and assesses their impact on challenging multimodal reasoning tasks. We consider an approach that iteratively leverages supervised fine-tuning (SFT) on lightweight training data and Reinforcement Learning (RL) to further improve model generalization. 
 
 As an early result, we present OpenVLThinker, a LVLM exhibiting consistently improved reasoning performance on challenging benchmarks such as MathVista, MathVerse, and MathVision.
-
-📄 **Paper**: A preview of the paper is provided [here](./paper/OpenVLThinker_report.pdf) 
 
 <p align="center">
 <img src="./assets/demo-vlthinker.png" width="600">
@@ -72,6 +70,19 @@ Our detailed evaluation results are listed below
 | MathVision (full) | 30.4 | 24.0 | **25.3** |
 
 *Table 1: Evaluation results across multi-modal reasoning benchmarks including MathVista, MathVerse and MathVision. We include the reported performance of GPT-4o as a reference. OpenVLThinker-7B consistently and effectively improves upon the performance of Qwen2.5-VL-7B, surpassing or matching the performance of GPT-4o.*
+
+## Citation
+```text
+@misc{deng2025openvlthinker,
+      title={OpenVLThinker: An Early Exploration to Complex Vision-Language Reasoning via Iterative Self-Improvement}, 
+      author={Yihe Deng and Hritik Bansal and Fan Yin and Nanyun Peng and Wei Wang and Kai-Wei Chang},
+      year={2025},
+      eprint={2503.17352},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2503.17352}, 
+}
+```
 
 ## Acknowledgments
 
