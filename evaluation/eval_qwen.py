@@ -251,7 +251,7 @@ def main():
     # Process each image
     for i, item in tqdm(enumerate(data), total=len(data), desc="Processing images"):
         correct_flag = 0
-        if dataset_type == DatasetType.MATHVERSE:
+        if dataset_type == DatasetType.MATHVISION:
             formatted_instruction = format_instruction(item['instruction'], item.get('options'))
         else:
             formatted_instruction = item['instruction']
