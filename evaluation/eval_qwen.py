@@ -12,7 +12,7 @@ from PIL import Image
 import requests
 from io import BytesIO
 import argparse
-from mathruler.grader import grade_answer
+from mathruler.grader import grade_answer, extract_boxed_content
 import re
 from pathlib import Path
 from enum import Enum
@@ -32,6 +32,8 @@ class DatasetType(Enum):
     MATHVISTA = "mathvista"
     MATHVERSE = "mathverse"
     MATHVISION = "mathvision"
+    SFTSEED = "sftseed"
+    HALLUSIONBENCH = "hallusionbench"
 
 @dataclass
 class DatasetConfig:
@@ -40,8 +42,10 @@ class DatasetConfig:
     image_field: str
     instruction_field: str
     response_field: str
+    subset: Optional[str] = None
     choices_field: Optional[str] = None
     options_field: Optional[str] = None
+    source_field: Optional[str] = None
 
 @dataclass
 class ModelConfig:
@@ -138,6 +142,7 @@ def get_dataset_config(dataset_type: DatasetType) -> DatasetConfig:
         ),
         DatasetType.MATHVERSE: DatasetConfig(
             name="AI4Math/MathVerse",
+            subset="testmini",
             split="testmini",
             image_field="image",
             instruction_field="query_cot",
@@ -150,6 +155,21 @@ def get_dataset_config(dataset_type: DatasetType) -> DatasetConfig:
             instruction_field="question",
             response_field="answer",
             options_field="options"
+        ),
+        DatasetType.SFTSEED: DatasetConfig(
+            name="ydeng9/sft_seed",
+            split="train",
+            image_field="decoded_image",
+            instruction_field="problem",
+            response_field="answer",
+            source_field="source"
+        ),
+        DatasetType.HALLUSIONBENCH: DatasetConfig(
+            name="lmms-lab/HallusionBench",
+            split="image",
+            image_field="image",
+            instruction_field="question",
+            response_field="gt_answer"
         )
     }
     return configs[dataset_type]
@@ -159,7 +179,10 @@ def load_image_dataset(dataset_config: DatasetConfig) -> List[Dict]:
     Load dataset from Hugging Face and extract image URLs and metadata
     """
     try:
-        data = load_dataset(dataset_config.name, split=dataset_config.split)
+        if dataset_config.subset:
+            data = load_dataset(dataset_config.name, dataset_config.subset, split=dataset_config.split)
+        else:
+            data = load_dataset(dataset_config.name, split=dataset_config.split)
         items = []
         for item in data:
             dataset_item = {
@@ -171,6 +194,8 @@ def load_image_dataset(dataset_config: DatasetConfig) -> List[Dict]:
                 dataset_item['choices'] = item.get(dataset_config.choices_field)
             if dataset_config.options_field:
                 dataset_item['options'] = item.get(dataset_config.options_field, [])
+            if dataset_config.source_field:
+                dataset_item['source'] = item.get(dataset_config.source_field, '')
             items.append(dataset_item)
         return items
     except Exception as e:
@@ -206,8 +231,11 @@ def process_response(response: str, choices: Optional[List[str]], options: Optio
             pass
     return response
 
-def format_instruction(instruction: str, options: Optional[List[str]] = None) -> str:
-    if options and len(options) > 0:
+def format_instruction(instruction: str, options: Optional[List[str]] = None, yes_no: bool = False) -> str:
+    if yes_no:
+        prompt_hint = "Hint: Please answer the question requiring an answer of yes or no."
+        return f"{prompt_hint}\nQuestion: {instruction}"
+    elif options and len(options) > 0:
         prompt_hint = "Hint: Please answer the question and provide the correct option letter, e.g., A, B, C, D, E, at the end."
         choice_list = "\n".join(f"({chr(65+i)}) {opt}" for i, opt in enumerate(options))
         return f"{prompt_hint}\nQuestion: {instruction}\nChoices:\n{choice_list}"
@@ -220,7 +248,7 @@ def main():
     parser.add_argument('--cuda', type=int, default=0, help='CUDA device number to use')
     parser.add_argument('--model_path', type=str, help='Path to the model', 
                       default="Qwen/Qwen2.5-VL-7B-Instruct")
-    parser.add_argument('--dataset', type=str, choices=['mathvista', 'mathverse', 'mathvision'],
+    parser.add_argument('--dataset', type=str, choices=['mathvista', 'mathverse', 'mathvision', 'sftseed', 'hallusionbench'],
                       default='mathvista', help='Dataset to evaluate on')
     args = parser.parse_args()
     
@@ -247,35 +275,52 @@ def main():
     
     descriptions = []
     correct = 0
+    
+    # For SFTSEED dataset, track accuracy per source
+    source_correct = {}
+    source_total = {}
 
     # Process each image
     for i, item in tqdm(enumerate(data), total=len(data), desc="Processing images"):
         correct_flag = 0
         if dataset_type == DatasetType.MATHVISION:
             formatted_instruction = format_instruction(item['instruction'], item.get('options'))
+        elif dataset_type == DatasetType.HALLUSIONBENCH:
+            formatted_instruction = format_instruction(item['instruction'], yes_no=True)
         else:
             formatted_instruction = item['instruction']
         answer = processor.generate_answer(item['image_url'], formatted_instruction)
         reasoning = answer
         
         if answer:
-            match = re.search(r'\\boxed\{(.+?)\}', answer)
-            answer = match.group(1) if match else answer
-            answer = answer.strip()
-            logger.info(f"Generated answer: {answer}")
-            
+            answer = extract_boxed_content(answer)
             processed_response = process_response(
                 item['response'],
                 item.get('choices'),
                 item.get('options')
             )
+            if dataset_type == DatasetType.HALLUSIONBENCH:
+                processed_response = "Yes" if processed_response == "1" else "No"
             
             if processed_response.lower() == answer.lower() or grade_answer(processed_response, answer):
                 correct += 1
                 correct_flag = 1
+
+                if dataset_type == DatasetType.SFTSEED and 'source' in item:
+                    source = item['source']
+                    if source not in source_correct:
+                        source_correct[source] = 0
+                        source_total[source] = 0
+                    source_correct[source] += 1
         else:
             answer = "Failed to generate."
             logger.warning(f"Failed to generate answer for question {i}")
+
+        if dataset_type == DatasetType.SFTSEED and 'source' in item:
+            source = item['source']
+            if source not in source_total:
+                source_total[source] = 0
+            source_total[source] += 1
 
         description = {
             'instruction': item['instruction'],
@@ -284,6 +329,10 @@ def main():
             'answer': answer,
             'correct': correct_flag
         }
+        
+        if dataset_type == DatasetType.SFTSEED and 'source' in item:
+            description['source'] = item['source']
+            
         descriptions.append(description)
         
         # Save periodically
@@ -294,6 +343,12 @@ def main():
     save_descriptions(descriptions, output_file)
     accuracy = correct / len(data)
     logger.info(f"Completed! Final accuracy: {accuracy:.4f}")
+
+    if dataset_type == DatasetType.SFTSEED and source_correct:
+        logger.info("Accuracy per source:")
+        for source in sorted(source_correct.keys()):
+            source_accuracy = source_correct[source] / source_total[source]
+            logger.info(f"  {source}: {source_accuracy:.4f} ({source_correct[source]}/{source_total[source]})")
 
 if __name__ == "__main__":
     main() 

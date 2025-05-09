@@ -31,6 +31,8 @@ class DatasetType(Enum):
     MATHVISTA = "mathvista"
     MATHVERSE = "mathverse"
     MATHVISION = "mathvision"
+    SFTSEED = "sftseed"
+    HALLUSIONBENCH = "hallusionbench"
 
 @dataclass
 class DatasetConfig:
@@ -39,6 +41,7 @@ class DatasetConfig:
     image_field: str
     instruction_field: str
     response_field: str
+    subset: Optional[str] = None
     choices_field: Optional[str] = None
     options_field: Optional[str] = None
 
@@ -137,6 +140,7 @@ def get_dataset_config(dataset_type: DatasetType) -> DatasetConfig:
         ),
         DatasetType.MATHVERSE: DatasetConfig(
             name="AI4Math/MathVerse",
+            subset="testmini",
             split="testmini",
             image_field="image",
             instruction_field="query_cot",
@@ -144,18 +148,35 @@ def get_dataset_config(dataset_type: DatasetType) -> DatasetConfig:
         ),
         DatasetType.MATHVISION: DatasetConfig(
             name="MathLLMs/MathVision",
-            split="testmini",
+            split="test",
             image_field="decoded_image",
             instruction_field="question",
             response_field="answer",
             options_field="options"
+        ),
+        DatasetType.SFTSEED: DatasetConfig(
+            name="ydeng9/sft_seed",
+            split="train",
+            image_field="decoded_image",
+            instruction_field="problem",
+            response_field="answer"
+        ),
+        DatasetType.HALLUSIONBENCH: DatasetConfig(
+            name="lmms-lab/HallusionBench",
+            split="image",
+            image_field="image",
+            instruction_field="question",
+            response_field="gt_answer"
         )
     }
     return configs[dataset_type]
 
 def load_image_dataset(dataset_config: DatasetConfig) -> List[Dict]:
     try:
-        data = load_dataset(dataset_config.name, split=dataset_config.split)
+        if dataset_config.subset:
+            data = load_dataset(dataset_config.name, dataset_config.subset, split=dataset_config.split)
+        else:
+            data = load_dataset(dataset_config.name, split=dataset_config.split)
         items = []
         for item in data:
             dataset_item = {
@@ -199,8 +220,11 @@ def process_response(response: str, choices: Optional[List[str]], options: Optio
             pass
     return response
 
-def format_instruction(instruction: str, options: Optional[List[str]] = None) -> str:
-    if options and len(options) > 0:
+def format_instruction(instruction: str, options: Optional[List[str]] = None, yes_no: bool = False) -> str:
+    if yes_no:
+        prompt_hint = "Hint: Please answer the question requiring an answer of yes or no."
+        return f"{prompt_hint}\nQuestion: {instruction}"
+    elif options and len(options) > 0:
         prompt_hint = "Hint: Please answer the question and provide the correct option letter, e.g., A, B, C, D, E, at the end."
         choice_list = "\n".join(f"({chr(65+i)}) {opt}" for i, opt in enumerate(options))
         return f"{prompt_hint}\nQuestion: {instruction}\nChoices:\n{choice_list}"
@@ -212,7 +236,7 @@ def main():
     parser = argparse.ArgumentParser(description='Evaluate model on various math datasets')
     parser.add_argument('--cuda', type=int, default=0, help='CUDA device number to use')
     parser.add_argument('--batch_size', type=int, default=1, help='Batch size for processing')
-    parser.add_argument('--dataset', type=str, choices=['mathvista', 'mathverse', 'mathvision'],
+    parser.add_argument('--dataset', type=str, choices=['mathvista', 'mathverse', 'mathvision', 'sftseed', 'hallusionbench'],
                       default='mathvista', help='Dataset to evaluate on')
     parser.add_argument('--model_path', type=str, help='Path to the model', default="ydeng9/OpenVLThinker-7B")
     args = parser.parse_args()
@@ -246,6 +270,8 @@ def main():
         correct_flag = 0
         if dataset_type == DatasetType.MATHVISION:
             formatted_instruction = format_instruction(item['instruction'], item.get('options'))
+        elif dataset_type == DatasetType.HALLUSIONBENCH:
+            formatted_instruction = format_instruction(item['instruction'], yes_no=True)
         else:
             formatted_instruction = item['instruction']
         answer = processor.generate_answer(item['image_url'], formatted_instruction)
@@ -258,6 +284,8 @@ def main():
                 item.get('choices'),
                 item.get('options')
             )
+            if dataset_type == DatasetType.HALLUSIONBENCH:
+                processed_response = "Yes" if processed_response == "1" else "No"
             
             if processed_response.lower() == answer.lower() or grade_answer(processed_response, answer):
                 correct += 1
