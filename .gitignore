@@ -5,4 +5,5 @@ figures/*
 outputs/*
 __pycache__/
 *.pyc
-data/
+
+!train/sft/data/dataset_info.json
