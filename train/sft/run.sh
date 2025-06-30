@@ -25,7 +25,7 @@ while true; do
     if [ "${#free_gpus[@]}" -ge 4 ]; then
         echo "Detected at least 4 free GPUs: ${free_gpus[0]}, ${free_gpus[1]}, ${free_gpus[2]}, ${free_gpus[3]}"
         # Construct and run the command using the first two free GPUs.
-        CUDA_VISIBLE_DEVICES="${free_gpus[0]},${free_gpus[1]},${free_gpus[2]},${free_gpus[3]}" llamafactory-cli train examples/train_full/qwen2vl_full_sft_qwq.yaml
+        CUDA_VISIBLE_DEVICES="${free_gpus[0]},${free_gpus[1]},${free_gpus[2]},${free_gpus[3]}" llamafactory-cli train sft.yaml
         break
     else
         echo "Not enough free GPUs detected. Checking again in 30 seconds..."
