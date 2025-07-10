@@ -3,10 +3,12 @@
 <h1>OpenVLThinker: An Early Exploration to Vision-Language Reasoning via Iterative Self-Improvement</h1>
 
 <p align="center">
-  <a href="https://huggingface.co/ydeng9/OpenVLThinker-7B">🤗Model</a> • <a href="https://yihe-deng.notion.site/openvlthinker">📝Blog</a> • <a href="https://arxiv.org/abs/2503.17352">📄Paper</a>
+  <a href="https://huggingface.co/collections/ydeng9/openvlthinker-v12-models-686f4632c23b59379c475169">🤗Models</a> • <a href="https://huggingface.co/collections/ydeng9/openvlthinker-v12-datasets-686f45e48d02e00b1585299e">🤗Data</a> • <a href="https://arxiv.org/abs/2503.17352">📄Paper</a>
 </p>
 
 </div>
+
+We maintain our initially released model here: [Legacy model: OpenVLThinker-v1.0](https://huggingface.co/ydeng9/OpenVLThinker-7B), with our initial exploratory [blog](https://yihe-deng.notion.site/openvlthinker).
 
 Authors: [Yihe Deng](https://yihe-deng.notion.site/yihe-deng-main), [Hritik Bansal](https://sites.google.com/view/hbansal), [Fan Yin](https://fanyin3639.github.io/), [Nanyun Peng](https://violetpeng.github.io/), [Wei Wang](https://web.cs.ucla.edu/~weiwang/), [Kai-Wei Chang](https://web.cs.ucla.edu/~kwchang/)
 
