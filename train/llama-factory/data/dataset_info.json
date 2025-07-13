@@ -1,0 +1,16 @@
+{
+  "openvlthinker-iter3": {
+    "hf_hub_url": "ydeng9/OpenVLThinker-sft-iter3",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages",
+      "images": "images"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  }
+}
