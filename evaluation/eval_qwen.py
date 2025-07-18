@@ -322,6 +322,7 @@ def process_response(response: str, choices: Optional[List[str]], options: Optio
 def format_instruction(instruction: str, options: Optional[List[str]] = None, yes_no: bool = False, vision: bool = False) -> str:
     if vision:
         prompt_hint = "Hint: Please answer the question shown in the image."
+        options = eval(options) if isinstance(options, str) else options
         if options and len(options) > 0:
             prompt_hint += " Provide the correct option letter, e.g., A, B, C, D, E, at the end."
             choice_list = "\n".join(f"({chr(65+i)}) {opt}" for i, opt in enumerate(options))
@@ -342,7 +343,7 @@ def main():
     parser = argparse.ArgumentParser(description='Evaluate Qwen model on various math datasets')
     parser.add_argument('--cuda', type=int, default=0, help='CUDA device number to use')
     parser.add_argument('--model_path', type=str, help='Path to the model', 
-                      default="Qwen/Qwen2.5-VL-3B-Instruct")
+                      default="Qwen/Qwen2.5-VL-7B-Instruct")
     parser.add_argument('--dataset', type=str, choices=['mathvista', 'mathverse', 'mathvision', 'sftseed', 'hallusionbench', 'emma-math', 'emma-chem', 'emma-code', 'emma-physics', 'mmmu-pro-10', 'mmmu-pro-4', 'mmmu-pro-vision'],
                       default='mathvista', help='Dataset to evaluate on')
     args = parser.parse_args()
@@ -355,10 +356,10 @@ def main():
     dataset_config = get_dataset_config(dataset_type)
     model_config = ModelConfig(
         model_name=args.model_path,
-        processor_name="Qwen/Qwen2.5-VL-3B-Instruct"
+        processor_name="Qwen/Qwen2.5-VL-7B-Instruct"
     )
     
-    output_file = f"./evaluation/outputs/{dataset_type.value}_{model_config.model_name.split('/')[-1]}.json"#_part2.json"
+    output_file = f"./evaluation/outputs/{dataset_type.value}_{model_config.model_name.split('/')[-1]}.json"
     
     # Initialize processor and model
     logger.info(f"Loading model {model_config.model_name}")
