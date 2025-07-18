@@ -20,6 +20,20 @@ As an early result, we present OpenVLThinker, a LVLM exhibiting consistently imp
 <img src="./assets/demo-vlthinker.png" width="600">
 </p>
 
+## Training
+
+OpenVLThinker is iteratively trained in two main stages: Supervised Fine-Tuning (SFT) followed by Reinforcement Learning (RL). The instructions for replicating the training process are located in their respective subdirectories.
+
+### 1. Supervised Fine-Tuning (SFT)
+
+This process is managed using the LLaMA-Factory framework. For complete setup and training instructions, please refer to the SFT README:
+**➡️ [SFT Training Instructions](./train/llama-factory/README.md)**
+
+### 2. Reinforcement Learning (RL)
+
+This process is based on the EasyR1 framework. For detailed steps on running the two-stage RL training, please see the RL README:
+**➡️ [RL Training Instructions](./train/easyr1/README.md)**
+
 ## Evaluation
 
 Our model has been evaluated on several challenging benchmarks:

@@ -1,6 +1,6 @@
 # SFT 
 
-This readme outlines the process for SFT. The code is sourced from [**LLaMA-Factory**](https://github.com/hiyouga/LLaMA-Factory).
+
 
 ## ⚙️ Setup
 
