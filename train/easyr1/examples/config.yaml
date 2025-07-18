@@ -34,7 +34,7 @@ worker:
       model_path: Qwen/Qwen2.5-7B-Instruct
       enable_gradient_checkpointing: true
       trust_remote_code: true
-      freeze_vision_tower: true
+      freeze_vision_tower: false
     optim:
       lr: 1.0e-6
       weight_decay: 1.0e-2
@@ -85,6 +85,6 @@ trainer:
   val_only: false
   val_generations_to_log: 3
   save_freq: 10  # -1 to disable
-  save_limit: 6  # -1 to disable
-  save_checkpoint_path: checkpoints/openvlthinker_grpo_freeze
+  save_limit: 10  # -1 to disable
+  save_checkpoint_path: checkpoints/openvlthinker_grpo_iter3
   load_checkpoint_path: null
