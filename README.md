@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>OpenVLThinker: An Early Exploration to Vision-Language Reasoning via Iterative Self-Improvement</h1>
+<h1>OpenVLThinker: Complex Vision-Language Reasoning via Iterative SFT-RL Cycles</h1>
 
 <p align="center">
   <a href="https://huggingface.co/collections/ydeng9/openvlthinker-v12-models-686f4632c23b59379c475169">🤗Models</a> • <a href="https://huggingface.co/collections/ydeng9/openvlthinker-v12-datasets-686f45e48d02e00b1585299e">🤗Data</a> • <a href="https://arxiv.org/abs/2503.17352">📄Paper</a>
