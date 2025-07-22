@@ -11,4 +11,5 @@ python3 -m verl.trainer.main \
     worker.actor.model.freeze_vision_tower=True \
     trainer.experiment_name=thinker_grpo_iter3_medium \
     trainer.n_gpus_per_node=8 \
+    trainer.total_episodes=5 \
     trainer.save_checkpoint_path=${SAVE_PATH} 
