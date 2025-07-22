@@ -17,7 +17,7 @@ Our study investigates whether R1-like reasoning capabilities can be successfull
 As an early result, we present OpenVLThinker, a LVLM exhibiting consistently improved reasoning performance on challenging benchmarks such as MathVista, MathVerse, and MathVision.
 
 <p align="center">
-<img src="./assets/demo-vlthinker.png" width="600">
+<img src="./assets/demo-vlthinker.png" width="700">
 </p>
 
 ## Training
@@ -38,54 +38,75 @@ This process is based on the EasyR1 framework. For detailed steps on running the
 
 Our model has been evaluated on several challenging benchmarks:
 
-- MathVista
-- MathVerse
-- MathVision
+- Math reasoning: MathVista, MathVerse, MathVision
+- General reasoning: MMMU-Pro, EMMA
+- Perception: HallusionBench
 
 <p align="center">
-<img src="./assets/main_result.png" width="600">
+<img src="./assets/overview.png" width="900">
 </p>
 
-We provide two evaluation scripts to handle different answer formats:
-
-1. For OpenVLThinker evaluation:
+Necessary packages
 ```bash
-python evaluation/eval_openvlthinker.py --dataset mathvista
+pip install qwen_vl_utils
+pip install mathruler
 ```
 
-2. For Qwen2.5-VL evaluation:
-```bash
-python evaluation/eval_qwen.py --dataset mathvista
+### Configure 
+
+Before running the evaluation, you need to configure the path to the model checkpoint you wish to evaluate.
+
+Open the evaluation script at [`evaluation/run_evaluation.py`](evaluation/run_evaluation.py) and locate the `get_model_eval_config` function. Update the model_name for the model you are testing. For example, we provided code to evaluate `OpenVLThinker-7B-v1.2`:
+
+```python
+# In evaluation/run_evaluation.py
+
+def get_model_eval_config(model_type: ModelType) -> ModelEvaluationConfig:
+    """Returns the specific configuration for a given model type."""
+    configs = {
+        ModelType.OPENVLTHINKER: ModelEvaluationConfig(
+            # ==> UPDATE THIS LINE with your model path <==
+            model_name="ydeng9/OpenVLThinker-v1.2", 
+            processor_name="Qwen/Qwen2.5-VL-3B-Instruct",
+            prompt_suffix=""
+        ),
+        ModelType.QWEN: ModelEvaluationConfig(
+            model_name="Qwen/Qwen2.5-VL-7B-Instruct",
+            processor_name="Qwen/Qwen2.5-VL-7B-Instruct",
+            prompt_suffix="\n\nYour final answer MUST BE put in \\boxed{}"
+        )
+    }
+    return configs[model_type]
 ```
 
-The scripts differ in how they handle answer extraction:
-- `eval_openvlthinker.py` expects answers in the format `<answer>...</answer>`
-- `eval_qwen.py` expects answers in the format `\boxed{...}`
+### Run Evaluation
 
-For MathVerse evaluation, we need to verify the model's responses using GPT-4V due to the more diverse response formats in its free-form questions:
+Use the unified script `run_evaluation.py` for all evaluations. The script automatically handles the correct answer extraction logic (`<answer>` vs. `\boxed{}`) based on the --model argument.
+
+To evaluate OpenVLThinker:
+
+```bash
+python evaluation/run_evaluation.py --model openvlthinker --dataset mathvista
+```
+
+To evaluate the base Qwen2.5-VL model:
+
+```bash
+python evaluation/run_evaluation.py --model qwen --dataset mathvista
+```
+
+An optional `--cuda` argument can be used to specify the GPU device (e.g., `--cuda 0`). The evaluation results, including a detailed JSON report, will be saved in the `./evaluation/outputs` directory.
+
+### Special Case: MathVerse Evaluation
+
+Due to the free-form nature of the MathVerse benchmark, we use GPT-4V to verify the model's responses. After generating the output file with the command above, run the verification script:
+
 ```bash
 python evaluation/verify_mathverse_gpt4.py \
-    --responses_file ./evaluation/outputs/mathverse_OpenVLThinker-7B.json \
-    --output_dir ./evaluation/outputs
+    --responses_file ./evaluation/outputs/mathverse_OpenVLThinker-v1.2.json 
 ```
-Note: This requires an OpenAI API key to be set in your environment variables.
 
-Optional arguments for both evaluation scripts:
-- `--cuda`: Specify CUDA device number (default: 0)
-- `--model_path`: Path to the model (default: "ydeng9/OpenVLThinker-7B" for OpenVLThinker, "Qwen/Qwen2.5-VL-7B-Instruct" for Qwen)
-
-The evaluation results will be saved in the `./evaluation/outputs` directory. **Note**: evaluation results may fluctuate on different GPUs.
-
-Our detailed evaluation results are listed below
-
-| Benchmark | GPT-4o (reported) | Qwen2.5-VL-7B | OpenVLThinker-7B |
-|-----------|------------------|---------------|------------------|
-| MathVista | 63.8 | 68.5 | **70.2** |
-| MathVerse | 50.2 | 46.8 | **47.9** |
-| MathVision (testmini) | - | 27.6 | **29.6** |
-| MathVision (full) | 30.4 | 24.0 | **25.3** |
-
-*Table 1: Evaluation results across multi-modal reasoning benchmarks including MathVista, MathVerse and MathVision. We include the reported performance of GPT-4o as a reference. OpenVLThinker-7B consistently and effectively improves upon the performance of Qwen2.5-VL-7B, surpassing or matching the performance of GPT-4o.*
+**Note**: This requires an OPENAI_API_KEY to be set in your environment variables.
 
 ## Citation
 ```text

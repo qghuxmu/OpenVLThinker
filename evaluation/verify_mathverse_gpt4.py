@@ -44,7 +44,7 @@ def main():
             data[i]['answer'] = [data[i]['answer']]
 
     judgement_data = []
-    outfile = f"outputs/gpt4_{model_name}.json"
+    outfile = f"evaluation/outputs/gpt4_{model_name}.json"
     print(f"saving to {outfile}")
     correct = 0
 
@@ -59,7 +59,7 @@ def main():
                 messages=get_prompt(instruction, ground_truth, model_response)
         )
         output = completion.choices[0].message.content
-        print(output)
+        # print(output)
         search = regex.search("Judgement: ", output)
         if search == None:
             if output == "Yes":

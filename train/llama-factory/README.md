@@ -12,12 +12,15 @@
 
 2.  **Install dependencies:**
     ```bash
+    pip install torch==2.6.0
+    pip install deepspeed
     pip install -e .
     ```
 
 3.  **(Optional) Login to Weights & Biases:**
     To enable experiment tracking, log in to your `wandb` account.
     ```bash
+    pip install wandb
     wandb login
     ```
 
