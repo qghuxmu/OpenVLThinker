@@ -320,9 +320,9 @@ def process_response(response: str, choices: Optional[List[str]], options: Optio
     return response
 
 def format_instruction(instruction: str, options: Optional[List[str]] = None, yes_no: bool = False, vision: bool = False) -> str:
+    options = eval(options) if isinstance(options, str) else options
     if vision:
         prompt_hint = "Hint: Please answer the question shown in the image."
-        options = eval(options) if isinstance(options, str) else options
         if options and len(options) > 0:
             prompt_hint += " Provide the correct option letter, e.g., A, B, C, D, E, at the end."
             choice_list = "\n".join(f"({chr(65+i)}) {opt}" for i, opt in enumerate(options))

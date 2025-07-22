@@ -38,6 +38,8 @@ class DatasetType(Enum):
     EMMA_CODE = "emma-code"
     EMMA_PHYSICS = "emma-physics"
     MMMU_PRO_VISION = "mmmu-pro-vision"
+    MMMU_PRO_4 = "mmmu-pro-4"
+    MMMU_PRO_10 = "mmmu-pro-10"
 
 @dataclass
 class DatasetConfig:
@@ -229,6 +231,24 @@ def get_dataset_config(dataset_type: DatasetType) -> DatasetConfig:
             response_field="answer",
             options_field="options"
         ),
+        DatasetType.MMMU_PRO_4: DatasetConfig(
+            name="MMMU/MMMU_Pro",
+            subset="standard (4 options)",
+            split="test",
+            image_field=["image_1","image_2","image_3","image_4","image_5", "image_6", "image_7"],
+            instruction_field="question",
+            response_field="answer",
+            options_field="options"
+        ),
+        DatasetType.MMMU_PRO_10: DatasetConfig(
+            name="MMMU/MMMU_Pro",
+            subset="standard (10 options)",
+            split="test",
+            image_field=["image_1","image_2","image_3","image_4","image_5", "image_6", "image_7"],
+            instruction_field="question",
+            response_field="answer",
+            options_field="options"
+        ),
     }
     return configs[dataset_type]
 
@@ -289,9 +309,9 @@ def process_response(response: str, choices: Optional[List[str]], options: Optio
     return response
 
 def format_instruction(instruction: str, options: Optional[List[str]] = None, yes_no: bool = False, vision: bool = False) -> str:
+    options = eval(options) if isinstance(options, str) else options
     if vision:
         prompt_hint = "Hint: Please answer the question shown in the image."
-        options = eval(options) if isinstance(options, str) else options
         if options and len(options) > 0:
             prompt_hint += " Provide the correct option letter, e.g., A, B, C, D, E, at the end."
             choice_list = "\n".join(f"({chr(65+i)}) {opt}" for i, opt in enumerate(options))
@@ -312,7 +332,7 @@ def main():
     parser = argparse.ArgumentParser(description='Evaluate model on various math datasets')
     parser.add_argument('--cuda', type=int, default=0, help='CUDA device number to use')
     parser.add_argument('--batch_size', type=int, default=1, help='Batch size for processing')
-    parser.add_argument('--dataset', type=str, choices=['mathvista', 'mathverse', 'mathvision', 'sftseed', 'hallusionbench', 'emma-math', 'emma-chem', 'emma-code', 'emma-physics', 'mmmu-pro-vision'],
+    parser.add_argument('--dataset', type=str, choices=['mathvista', 'mathverse', 'mathvision', 'sftseed', 'hallusionbench', 'emma-math', 'emma-chem', 'emma-code', 'emma-physics', 'mmmu-pro-vision', 'mmmu-pro-4', 'mmmu-pro-10'],
                       default='mathvista', help='Dataset to evaluate on')
     parser.add_argument('--model_path', type=str, help='Path to the model', default="ydeng9/OpenVLThinker-7B")
     args = parser.parse_args()
@@ -325,12 +345,12 @@ def main():
     dataset_config = get_dataset_config(dataset_type)
     model_config = ModelConfig(
         model_name=args.model_path,
-        processor_name="Qwen/Qwen2.5-VL-7B-Instruct"
+        processor_name="Qwen/Qwen2.5-VL-3B-Instruct"
     )
     
     output_file = f"./evaluation/outputs/{dataset_type.value}_{model_config.model_name.split('/')[-1]}.json"
     
-    # Initialize processor and model
+    # Initialize processor and mode2l
     logger.info(f"Loading model {model_config.model_name}")
     processor = ImageProcessor(model_config, device)
     
@@ -345,7 +365,7 @@ def main():
     # Process each image
     for i, item in tqdm(enumerate(data), total=len(data), desc="Processing images"):
         correct_flag = 0
-        if dataset_type == DatasetType.MATHVISION or dataset_type == DatasetType.EMMA_MATH or dataset_type == DatasetType.EMMA_CHEM or dataset_type == DatasetType.EMMA_CODE or dataset_type == DatasetType.EMMA_PHYSICS:
+        if dataset_type == DatasetType.MATHVISION or dataset_type == DatasetType.EMMA_MATH or dataset_type == DatasetType.EMMA_CHEM or dataset_type == DatasetType.EMMA_CODE or dataset_type == DatasetType.EMMA_PHYSICS or dataset_type == DatasetType.MMMU_PRO_4 or dataset_type == DatasetType.MMMU_PRO_10:
             formatted_instruction = format_instruction(item['instruction'], item.get('options'))
         elif dataset_type == DatasetType.HALLUSIONBENCH:
             formatted_instruction = format_instruction(item['instruction'], yes_no=True)
@@ -358,7 +378,7 @@ def main():
         
         if answer and "</answer>" in answer:
             answer = answer.split("<answer>")[-1].split("</answer>")[0].strip()
-            if dataset_type == DatasetType.MMMU_PRO_VISION:
+            if dataset_type == DatasetType.MMMU_PRO_VISION or dataset_type == DatasetType.MMMU_PRO_4 or dataset_type == DatasetType.MMMU_PRO_10:
                 processed_response = item['response']
             else:
                 processed_response = process_response(
