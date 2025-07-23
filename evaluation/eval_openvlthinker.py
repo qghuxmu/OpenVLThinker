@@ -345,7 +345,7 @@ def main():
     dataset_config = get_dataset_config(dataset_type)
     model_config = ModelConfig(
         model_name=args.model_path,
-        processor_name="Qwen/Qwen2.5-VL-3B-Instruct"
+        processor_name="Qwen/Qwen2.5-VL-7B-Instruct"
     )
     
     output_file = f"./evaluation/outputs/{dataset_type.value}_{model_config.model_name.split('/')[-1]}.json"

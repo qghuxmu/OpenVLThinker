@@ -52,50 +52,32 @@ pip install qwen_vl_utils
 pip install mathruler
 ```
 
-### Configure 
-
-Before running the evaluation, you need to configure the path to the model checkpoint you wish to evaluate.
-
-Open the evaluation script at [`evaluation/run_evaluation.py`](evaluation/run_evaluation.py) and locate the `get_model_eval_config` function. Update the model_name for the model you are testing. For example, we provided code to evaluate `OpenVLThinker-7B-v1.2`:
-
-```python
-# In evaluation/run_evaluation.py
-
-def get_model_eval_config(model_type: ModelType) -> ModelEvaluationConfig:
-    """Returns the specific configuration for a given model type."""
-    configs = {
-        ModelType.OPENVLTHINKER: ModelEvaluationConfig(
-            # ==> UPDATE THIS LINE with your model path <==
-            model_name="ydeng9/OpenVLThinker-v1.2", 
-            processor_name="Qwen/Qwen2.5-VL-3B-Instruct",
-            prompt_suffix=""
-        ),
-        ModelType.QWEN: ModelEvaluationConfig(
-            model_name="Qwen/Qwen2.5-VL-7B-Instruct",
-            processor_name="Qwen/Qwen2.5-VL-7B-Instruct",
-            prompt_suffix="\n\nYour final answer MUST BE put in \\boxed{}"
-        )
-    }
-    return configs[model_type]
-```
-
 ### Run Evaluation
 
-Use the unified script `run_evaluation.py` for all evaluations. The script automatically handles the correct answer extraction logic (`<answer>` vs. `\boxed{}`) based on the --model argument.
+We provide two evaluation scripts to handle different answer formats:
 
-To evaluate OpenVLThinker:
+1. For OpenVLThinker evaluation:
 
 ```bash
-python evaluation/run_evaluation.py --model openvlthinker --dataset mathvista
+python evaluation/eval_openvlthinker.py --dataset mathvista
 ```
 
-To evaluate the base Qwen2.5-VL model:
+2. For Qwen2.5-VL evaluation:
 
 ```bash
-python evaluation/run_evaluation.py --model qwen --dataset mathvista
+python evaluation/eval_qwen.py --dataset mathvista
 ```
 
 An optional `--cuda` argument can be used to specify the GPU device (e.g., `--cuda 0`). The evaluation results, including a detailed JSON report, will be saved in the `./evaluation/outputs` directory.
+
+### Datasets
+Evaluation supports 
+- `mathvista`, 
+- `mathverse`, 
+- `mathvision`
+- EMMA (`emma-math`,`emma-chem`, `emma-code`, `emma-physics`)
+- MMMU (`mmmu-pro-vision`, `mmmu-pro-4`, `mmmu-pro-10`)
+- `hallusionbench`
 
 ### Special Case: MathVerse Evaluation
 
