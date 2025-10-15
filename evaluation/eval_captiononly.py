@@ -90,7 +90,7 @@ class ImageProcessor:
             logger.error(f"Failed to load processor: {str(e)}")
             raise
 
-    def generate_answer(self, instruction: str) -> Optional[str]:
+    def generate_answer(self, image_caption: str, instruction: str) -> Optional[str]:
         try:
         #     if isinstance(image_url, list):
         #         content = [
@@ -117,7 +117,7 @@ class ImageProcessor:
             messages = [
                 {
                     "role": "user",
-                    "content": instruction + "\n\nYour final answer MUST BE put in \\boxed{}",
+                    "content": "Image Description: " + image_caption + "\n\n" + instruction + "\n\nYour final answer MUST BE put in \\boxed{}"
                 }
             ]
         
@@ -394,9 +394,7 @@ def main():
             formatted_instruction = format_instruction(item['instruction'], item.get('options'), vision=True)
         else:
             formatted_instruction = item['instruction']
-
-        formatted_instruction = "Image Description: " + item['image_url'] + "\n\n" + formatted_instruction
-        answer = processor.generate_answer(formatted_instruction)
+        answer = processor.generate_answer(item['image_url'], formatted_instruction)
         reasoning = answer
 
         if answer:
