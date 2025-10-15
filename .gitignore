@@ -1,8 +1,6 @@
-*.json
 *.log
 *.png
 figures/*
-outputs/*
 __pycache__/
 *.pyc
 
