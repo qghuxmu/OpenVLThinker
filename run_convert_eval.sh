@@ -2,6 +2,7 @@
 
 project_name=${PROJECT_NAME}
 experiment_name=${EXPERIMENT_NAME}
+dataset_name=${DATASET_NAME}
 
 if [ "$#" -ne 2 ]; then
     echo "Usage: $0 <step> <device>"
@@ -29,6 +30,6 @@ python scripts/model_merger.py --local_dir "$local_dir"
 
 python evaluation/eval_qwen.py \
     --model_name_or_path $target_dir \
-    --dataset mathvista,mathvision,hallusionbench \
+    --dataset $dataset_name \
     --cuda $device \
     --output_dir $target_dir/eval_results
