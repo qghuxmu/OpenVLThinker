@@ -16,7 +16,7 @@ device=$2
 
 echo "Merging model at global_step_$step..."
 
-local_dir="/home/v-qingguohu/blob-hptrainingwesteurope-pretraining/qingguo/${project_name}/${experiment_name}/global_step_${step}/actor"
+local_dir="/mnt/blob-hptrainingwesteurope-pretraining/qingguo/${project_name}/${experiment_name}/global_step_${step}/actor"
 target_dir="${local_dir}/huggingface"
 
 # 判断local_dir是否存在
