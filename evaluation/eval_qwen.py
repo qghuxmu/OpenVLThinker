@@ -96,7 +96,7 @@ class ImageProcessor:
                 content = [
                     {"type": "image", "image": url} for url in image_url
                 ]
-                content += [{"type": "text", "text": instruction + "\n\nYour final answer MUST BE put in \\boxed{}"}]
+                content += [{"type": "text", "text": instruction + " You FIRST think about the reasoning process as an internal monologue and then provide the final answer. The reasoning process MUST BE enclosed within <think> </think> tags. The final answer MUST BE put in \\boxed{}."}]
                 messages = [
                     {
                         "role": "user",
@@ -109,7 +109,7 @@ class ImageProcessor:
                         "role": "user",
                         "content": [
                             {"type": "image", "image": image_url},
-                            {"type": "text", "text": instruction + "\n\nYour final answer MUST BE put in \\boxed{}"},
+                            {"type": "text", "text": instruction + " You FIRST think about the reasoning process as an internal monologue and then provide the final answer. The reasoning process MUST BE enclosed within <think> </think> tags. The final answer MUST BE put in \\boxed{}."},
                         ],
                     }
                 ]
@@ -346,6 +346,8 @@ def main():
                       default="Qwen/Qwen2.5-VL-7B-Instruct")
     parser.add_argument('--dataset', type=str, choices=['mathvista', 'mathverse', 'mathvision', 'sftseed', 'hallusionbench', 'emma-math', 'emma-chem', 'emma-code', 'emma-physics', 'mmmu-pro-10', 'mmmu-pro-4', 'mmmu-pro-vision'],
                       default='mathvista', help='Dataset to evaluate on')
+    parser.add_argument('--output_dir', type=str, help='Path to the output directory', 
+                      default="./evaluation/outputs")
     args = parser.parse_args()
     
     device = f"cuda:{args.cuda}" if torch.cuda.is_available() else "cpu"
@@ -359,7 +361,7 @@ def main():
         processor_name="Qwen/Qwen2.5-VL-7B-Instruct"
     )
     
-    output_file = f"./evaluation/outputs/{dataset_type.value}_{model_config.model_name.split('/')[-1]}.json"
+    output_file = f"{args.output_dir}/{dataset_type.value}_{model_config.model_name.split('/')[-1]}.json"
     
     # Initialize processor and model
     logger.info(f"Loading model {model_config.model_name}")
