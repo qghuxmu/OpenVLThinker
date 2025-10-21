@@ -29,7 +29,7 @@ fi
 python evaluation/model_merger.py --local_dir "$local_dir"
 
 python evaluation/eval_qwen.py \
-    --model_name_or_path $target_dir \
+    --model_path $target_dir \
     --dataset $dataset_name \
     --cuda $device \
     --output_dir $target_dir/eval_results
