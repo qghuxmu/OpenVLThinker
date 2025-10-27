@@ -117,7 +117,7 @@ class ImageProcessor:
             messages = [
                 {
                     "role": "user",
-                    "content": "Image Description: " + image_caption + "\n\n" + instruction + "\n\nYour final answer MUST BE put in \\boxed{}"
+                    "content": "Image Description: " + image_caption + "\n\n" + instruction + "\n\nYou FIRST think about the reasoning process as an internal monologue and then provide the final answer. The reasoning process MUST BE enclosed within <think> </think> tags. The final answer MUST BE put in \\boxed{}."
                 }
             ]
         
